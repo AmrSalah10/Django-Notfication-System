@@ -5,12 +5,12 @@
 
 ## Tools
 
-- Back-End:
+### Back-End:
 * Django framework
 To achieve this project I had to install django-notifications-hq package
  by ```pip install django-notifications-hq``` command
 
-- Front-End:
+### Front-End:
 
 * Django templates
 * CSS
@@ -21,16 +21,19 @@ To achieve this project I had to install django-notifications-hq package
 
 The project is structured by VT design pattern
 
-- View part
+### View part
 
-It has three function based views
+* It has three function based views
 
 1- index: It is resonsible for rendering index template
+
 2- logout_view: It is resonsible for logging user out and redirecting him to login template
+
 3- sendMsg: It is resonsible for sending the admin message then redirecting him to index template
+
 4- sendMsgAll: It is resonsible for sending the admin message for all users at once
 
-Template part
+### Template part
 
 * It consists of one dynamic template (index.html) for admin and each user and (login.html) template
 It has a navbar which has a notification icon for displaying notifications
