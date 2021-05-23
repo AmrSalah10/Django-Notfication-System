@@ -1,0 +1,11 @@
+#brand{
+    list-style: none;
+}
+#nav{
+    border-radius:0 ;
+}
+.badge{
+    color: white;
+    background-color: red;
+    font-size: 15px;
+}

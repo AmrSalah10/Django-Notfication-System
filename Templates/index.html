@@ -1,0 +1,141 @@
+<!doctype html>
+    <html>
+    <head>
+        <!-- Load CSS file -->
+        {% load static %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{%  static  'CSS/style.css'  %}">    
+        </head>
+
+        <body>
+        {% load notifications_tags %}
+        <!-- Start Navbar -->
+        <nav id="nav" class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                {% if user.is_authenticated %}
+                <!-- Nav Brand -->
+                <li id='brand' class="navbar-brand">Hello {{user}}</li>
+                {% else %}
+                <li id='brand' class="navbar-brand">Hello Guest</li>
+                {% endif %}
+                </div>
+                <!-- Nav Items -->
+                <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                {% if user.is_authenticated and user.is_staff == False %}
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fas fa-bell" style="font-size:20px;"> {% live_notify_badge badge_class="badge" %} </i>
+                        <span class="caret"></span>
+                    </a>
+                    <!-- Notifications -->
+                    <ul class="dropdown-menu">
+                        {% if  user.notifications.unread  %}
+                            {% for notification in  user.notifications.unread %}
+                            <li> <b>{{ notification.actor }} : </b>
+                            <p>{{ notification.description }}</p>
+                            <button class="btn btn-default">
+                                <a href="inbox/notifications/delete/{{notification.slug}}"> remove </a> 
+                            </button>
+                            <button class="btn btn-default">
+                                <a href="inbox/notifications/mark-as-read/{{notification.slug}}"> mark as read </a> 
+                            </button>    
+                            <hr>
+                            </li>
+                            {% endfor %}
+                            <button class="btn btn-default">
+                                <a href="inbox/notifications/"> show all </a>
+                            </button>
+                        {% else %}
+                            <p> No notifications </p>
+                        {% endif %}
+                    </ul>
+                </li> 
+                {% endif %}
+                </ul>
+                <!-- Nav Icons -->
+                <ul class="nav navbar-nav navbar-right">
+                {% if user.is_authenticated %}
+                <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                {% else %}
+                <li><a href="{% url 'login' %}"><span class="glyphicon glyphicon-log-in"></span> Sigin</a></li>
+                {% endif %}
+                </ul>
+            </div>
+            </nav>
+            <!-- End Navbar -->
+
+        <!-- Start Page -->
+        <!-- Send message to individual user -->
+        {% if user.is_staff %}
+        <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Message</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for member in members %}
+                    <form  action="{% url 'sendMsg' %}"   method="post" enctype="multipart/form-data">
+                    <tr>
+                        <td> {{member}} </td>
+                        <td>
+                            {% csrf_token %}
+                            <input id="{{member.id}}" type="text" name="message" >
+                            <input type="hidden" name='member_id' value='{{ member.id }}'>
+                        </td>
+                        <td> 
+                            <button id={{member.id}} onclick="return check(event)" type="submit" value="Submit" class="btn btn-primary">Send message</button>
+                        </td> 
+                    </tr>
+                    </form>
+                    {% endfor %}
+                </tbody>
+        </table>
+
+        <!-- Send messages to all users -->
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th> All Users </th>
+            </tr>
+            </thead> 
+            <tbody>
+                <form  action="{% url 'sendMsgAll' %}"   method="post" enctype="multipart/form-data">
+                <tr>                        
+                    <td>
+                        {% csrf_token %}
+                        <input id='sendAll'  type="text" name="message" >
+                    </td>
+                    <td> 
+                        <button id='sendAll'  onclick="return check(event)" type="submit" value="Submit" class="btn btn-primary">Send message </button>
+                    </td> 
+                </tr>                    
+                </form>
+            </tbody>
+        </table>
+        {% endif %} 
+        <!-- End Page -->
+
+    <script>
+        // Check that message is not empty string
+        function check(event){
+            let btn = event.target;
+            msg_id =$(btn).attr('id');
+            msg = $(`input[id=${msg_id}]`).val();
+            if(msg === ''){
+                alert('Please write your message')
+                return false
+            }
+            return true      
+        }   
+    </script>
+
+    </body>
+    </html>
